@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth Lens | Multimodal Digital Forensics & Deepfake Detection</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#090D16',
+                        slatePanel: '#111827',
+                        slateBorder: '#1E293B',
+                        cyberCyan: '#06B6D4',
+                        forensicBlue: '#3B82F6',
+                        anomalyRed: '#EF4444',
+                        authenticGreen: '#10B981',
+                        warningAmber: '#F59E0B'
+                    },
+                    animation: {
+                        'scan-line': 'scanLine 3s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        scanLine: {
+                            '0%': { top: '0%', opacity: '0' },
+                            '10%': { opacity: '1' },
+                            '90%': { opacity: '1' },
+                            '100%': { top: '100%', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom subtle scrollbars and forensic grid patterns */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090D16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .forensic-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(30, 41, 59, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 41, 59, 0.4) 1px, transparent 1px);
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 41, 59, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-slate-200 font-sans antialiased selection:bg-cyberCyan selection:text-obsidian min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-slateBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyberCyan to-forensicBlue p-0.5 shadow-lg shadow-cyberCyan/20">
+                    <div class="w-full h-full bg-obsidian rounded-[7px] flex items-center justify-center">
+                        <i data-lucide="scan-eye" class="w-5 h-5 text-cyberCyan"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight text-white">TRUTH<span class="text-cyberCyan">LENS</span></span>
+                    <span class="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">v4.2 Core</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-400">
+                <a href="#workbench" class="text-white hover:text-cyberCyan transition-colors">Forensic Workbench</a>
+                <a href="#modalities" class="hover:text-cyberCyan transition-colors">Multimodal Engine</a>
+                <a href="#architecture" class="hover:text-cyberCyan transition-colors">Zero-Trust Pipeline</a>
+            </nav>
+
+            <!-- Status & CTA -->
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex items-center space-x-2 text-xs font-mono text-authenticGreen bg-authenticGreen/10 border border-authenticGreen/20 px-3 py-1.5 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-authenticGreen animate-pulse"></span>
+                    <span>NEURAL ENGINE ONLINE</span>
+                </div>
+                <button onclick="scrollToWorkbench()" class="bg-cyberCyan hover:bg-cyan-400 text-obsidian font-semibold text-xs sm:text-sm px-4 py-2 rounded-lg transition-all shadow-md shadow-cyberCyan/20 flex items-center space-x-1.5">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                    <span>Inspect Media</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-12 pb-10 sm:pt-16 sm:pb-14 forensic-grid border-b border-slateBorder">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-obsidian/60 to-obsidian pointer-events-none"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-xs font-mono text-cyberCyan mb-6">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                <span>CRYPTOGRAPHIC & NEURAL MEDIA VERIFICATION</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white max-w-4xl mx-auto leading-tight">
+                Expose Synthetic Media with <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyberCyan via-forensicBlue to-indigo-400">Multimodal Forensics</span>
+            </h1>
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                Truth Lens cross-examines visual pixel artifacts, vocal spectral anomalies, temporal lip-sync drift, and C2PA cryptographic provenance to verify digital authenticity in seconds.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Interactive Forensic Workbench -->
+    <main id="workbench" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        
+        <!-- Sample Case Selector & Upload Trigger -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+            <div>
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="microscope" class="w-5 h-5 text-cyberCyan"></i>
+                    <span>Active Forensic Investigation</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Select a sample evidence exhibit below or upload your own file for real-time inspection.</p>
+            </div>
+
+            <!-- Sample Presets & Upload -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button onclick="loadSample('deepfake_video')" id="btn-sample-1" class="sample-btn active px-3.5 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2 bg-cyberCyan/15 border-cyberCyan text-white">
+                    <i data-lucide="video" class="w-3.5 h-3.5 text-cyberCyan"></i>
+                    <span>Exhibit A: Executive Deepfake</span>
+                </button>
+                <button onclick="loadSample('voice_clone')" id="btn-sample-2" class="sample-btn px-3.5 py-2 rounded-lg text-xs font-medium border border-slateBorder bg-slatePanel hover:border-slate-600 text-slate-300 transition-all flex items-center gap-2">
+                    <i data-lucide="audio-waveform" class="w-3.5 h-3.5 text-warningAmber"></i>
+                    <span>Exhibit B: Cloned Wire Call</span>
+                </button>
+                <button onclick="loadSample('authentic_photo')" id="btn-sample-3" class="sample-btn px-3.5 py-2 rounded-lg text-xs font-medium border border-slateBorder bg-slatePanel hover:border-slate-600 text-slate-300 transition-all flex items-center gap-2">
+                    <i data-lucide="camera" class="w-3.5 h-3.5 text-authenticGreen"></i>
+                    <span>Exhibit C: Verified Raw Press</span>
+                </button>
+                
+                <!-- Custom File Upload Button -->
+                <label class="cursor-pointer px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 transition-all flex items-center gap-2">
+                    <i data-lucide="folder-up" class="w-3.5 h-3.5 text-cyberCyan"></i>
+                    <span>Upload Evidence</span>
+                    <input type="file" id="evidence-upload" accept="image/*,video/*,audio/*" class="hidden" onchange="handleFileUpload(event)">
+                </label>
+            </div>
+        </div>
+
+        <!-- Workbench Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left 7 Columns: Visual/Spectral Viewport & Layer Controls -->
+            <div class="lg:col-span-7 flex flex-col gap-4">
+                
+                <!-- Viewport Container -->
+                <div class="glass-panel rounded-2xl overflow-hidden flex flex-col border border-slateBorder shadow-2xl">
+                    <!-- Viewport Top Toolbar -->
+                    <div class="px-4 py-3 bg-slate-900/90 border-b border-slateBorder flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            <span id="viewport-filename" class="ml-2 text-xs font-mono text-slate-300 truncate max-w-[180px] sm:max-w-xs">exhibit_a_ceo_statement.mp4</span>
+                        </div>
+                        
+                        <!-- Lens Filter Mode Switcher -->
+                        <div class="flex items-center bg-obsidian p-1 rounded-lg border border-slateBorder text-xs font-mono">
+                            <button onclick="setLensMode('standard')" id="lens-standard" class="lens-tab px-2.5 py-1 rounded bg-slate-800 text-white transition-all">RAW</button>
+                            <button onclick="setLensMode('heatmap')" id="lens-heatmap" class="lens-tab px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">GAN HEATMAP</button>
+                            <button onclick="setLensMode('ela')" id="lens-ela" class="lens-tab px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">ELA NOISE</button>
+                            <button onclick="setLensMode('spectral')" id="lens-spectral" class="lens-tab px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">SPECTROGRAM</button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Canvas Viewport -->
+                    <div id="canvas-wrapper" class="relative w-full aspect-video bg-obsidian flex items-center justify-center overflow-hidden">
+                        <canvas id="forensic-canvas" class="w-full h-full block"></canvas>
+                        
+                        <!-- Animated Laser Scan Line (Visible during analysis) -->
+                        <div id="scan-overlay" class="hidden absolute inset-x-0 h-0.5 bg-cyberCyan shadow-[0_0_15px_#06B6D4] animate-scan-line pointer-events-none z-20"></div>
+                        
+                        <!-- Processing HUD Overlay -->
+                        <div id="processing-hud" class="hidden absolute inset-0 bg-obsidian/80 backdrop-blur-sm flex flex-col items-center justify-center z-30 p-6 text-center">
+                            <div class="w-12 h-12 border-2 border-cyberCyan border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <p id="processing-step" class="font-mono text-sm text-cyberCyan font-semibold">EXTRACTING FACIAL LANDMARKS...</p>
+                            <p class="text-xs text-slate-400 mt-1 font-mono">Running XceptionNet + Wav2Vec2 Multimodal Ensemble</p>
+                        </div>
+
+                        <!-- Bottom Viewport Telemetry Bar -->
+                        <div class="absolute bottom-3 inset-x-3 flex items-center justify-between pointer-events-none">
+                            <div class="bg-obsidian/85 backdrop-blur border border-slateBorder px-3 py-1.5 rounded-lg text-[11px] font-mono text-slate-300 flex items-center gap-3">
+                                <span id="hud-resolution">RES: 1920x1080 (60fps)</span>
+                                <span class="text-slate-600">|</span>
+                                <span id="hud-lens-label" class="text-cyberCyan">LENS: COMPOSITE + LANDMARKS</span>
+                            </div>
+                            <div class="bg-obsidian/85 backdrop-blur border border-slateBorder px-2.5 py-1.5 rounded-lg text-[11px] font-mono text-slate-400 hidden sm:block">
+                                SHA-256 VERIFIED
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline / Audio Sync Scrubber -->
+                    <div class="p-4 bg-slate-900/60 border-t border-slateBorder">
+                        <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+                            <span class="flex items-center gap-1.5">
+                                <i data-lucide="activity" class="w-3.5 h-3.5 text-cyberCyan"></i>
+                                TEMPORAL ANOMALY TIMELINE
+                            </span>
+                            <span id="timeline-timestamp">00:04.12 / 00:15.00</span>
+                        </div>
+                        <!-- Interactive Scrubber Bar -->
+                        <div class="relative h-8 bg-obsidian rounded-lg border border-slateBorder p-1 flex items-center gap-0.5 cursor-pointer" id="timeline-bar" onclick="scrubTimeline(event)">
+                            <!-- Anomaly bars injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cryptographic & EXIF Metadata Bar -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-slateBorder">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                            <i data-lucide="file-code-2" class="w-4 h-4 text-forensicBlue"></i>
+                            <span>Container & C2PA Provenance Telemetry</span>
+                        </h3>
+                        <span id="c2pa-badge" class="text-[11px] font-mono px-2.5 py-0.5 rounded bg-anomalyRed/15 text-anomalyRed border border-anomalyRed/30">
+                            C2PA SIGNATURE MISSING
+                        </span>
+                    </div>
+                    <div id="metadata-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <!-- Metadata cards populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right 5 Columns: Multimodal Forensic Verdict & Breakdown -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
+                
+                <!-- Primary Verdict Card -->
+                <div id="verdict-card" class="glass-panel rounded-2xl p-5 sm:p-6 border border-anomalyRed/40 relative overflow-hidden">
+                    <div id="verdict-glow" class="absolute -top-24 -right-24 w-48 h-48 bg-anomalyRed/15 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-mono uppercase tracking-widest text-slate-400">SYNTHETIC PROBABILITY</span>
+                            <div class="mt-1 flex items-baseline gap-2">
+                                <span id="verdict-score" class="text-4xl sm:text-5xl font-bold font-mono text-anomalyRed">96.8%</span>
+                                <span id="verdict-label" class="text-xs font-mono font-semibold uppercase px-2.5 py-1 rounded bg-anomalyRed/20 text-anomalyRed border border-anomalyRed/30">
+                                    MANIPULATED
+                                </span>
+                            </div>
+                        </div>
+                        <div id="verdict-icon-box" class="w-12 h-12 rounded-xl bg-anomalyRed/15 border border-anomalyRed/30 flex items-center justify-center text-anomalyRed shrink-0">
+                            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <p id="verdict-summary" class="mt-4 text-sm text-slate-300 leading-relaxed">
+                        High-confidence facial reenactment detected. Diffusion blending artifacts identified along jawline boundaries alongside phoneme-to-viseme lip synchronization drift (+140ms).
+                    </p>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-5 pt-4 border-t border-slateBorder/80 flex items-center justify-between gap-3">
+                        <button onclick="reRunScan()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium py-2.5 px-3 rounded-lg border border-slate-700 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-cyberCyan"></i>
+                            <span>Re-Verify Pipeline</span>
+                        </button>
+                        <button onclick="exportReport()" class="flex-1 bg-cyberCyan/15 hover:bg-cyberCyan/25 text-cyberCyan text-xs font-semibold py-2.5 px-3 rounded-lg border border-cyberCyan/30 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                            <span>Export Forensic JSON</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Multimodal Sub-Engine Breakdown -->
+                <div class="glass-panel rounded-2xl p-5 sm:p-6 border border-slateBorder flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="layers" class="w-4 h-4 text-cyberCyan"></i>
+                                <span>Multimodal Detection Vectors</span>
+                            </h3>
+                            <span class="text-[11px] font-mono text-slate-400">4 ENGINES ACTIVE</span>
+                        </div>
+
+                        <div id="modality-list" class="space-y-4">
+                            <!-- Modality bars injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Forensic Findings Log -->
+                    <div class="mt-6 pt-4 border-t border-slateBorder">
+                        <h4 class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-2.5">Detected Artifact Signatures</h4>
+                        <ul id="findings-list" class="space-y-2 text-xs text-slate-300">
+                            <!-- Findings injected by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Multimodal Capabilities Overview Section -->
+    <section id="modalities" class="py-12 sm:py-16 border-t border-slateBorder bg-slate-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-xs font-mono uppercase tracking-widest text-cyberCyan">TRI-MODAL ARCHITECTURE</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-2">Cross-Modal Consistency Verification</h2>
+                <p class="text-sm text-slate-400 mt-2">Single-mode detectors fail against modern generative models. Truth Lens correlates biological, acoustic, and cryptographic signals simultaneously.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-panel rounded-2xl p-6 border border-slateBorder hover:border-cyberCyan/40 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-cyberCyan/10 border border-cyberCyan/20 flex items-center justify-center text-cyberCyan mb-4">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-white">Visual & Biological Micro-Signals</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+                        Detects sub-perceptual remote photoplethysmography (rPPG) blood-flow pulse absence, corneal reflection asymmetry, and diffusion upsampling checkerboard grids.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel rounded-2xl p-6 border border-slateBorder hover:border-forensicBlue/40 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-forensicBlue/10 border border-forensicBlue/20 flex items-center justify-center text-forensicBlue mb-4">
+                        <i data-lucide="mic" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-white">Acoustic & Vocoder Forensics</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+                        Analyzes high-frequency phase coherence above 8kHz, unnatural breath cadence, and neural vocoder harmonic artifacts across Mel-spectrograms.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel rounded-2xl p-6 border border-slateBorder hover:border-authenticGreen/40 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-authenticGreen/10 border border-authenticGreen/20 flex items-center justify-center text-authenticGreen mb-4">
+                        <i data-lucide="fingerprint" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-white">C2PA & Cryptographic Provenance</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+                        Validates Content Credentials manifests, hardware sensor noise fingerprints (PRNU), and quantization table histories to reconstruct chain-of-custody.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zero-Trust Pipeline Section -->
+    <section id="architecture" class="py-12 border-t border-slateBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-slateBorder flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 max-w-xl">
+                    <div class="inline-flex items-center gap-2 text-xs font-mono text-authenticGreen">
+                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <span>AIR-GAPPED & ZERO-RETENTION PROCESSING</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Enterprise Evidentiary Integrity</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                        All uploaded media is hashed locally via SHA-256 and processed in ephemeral memory enclaves. Generate court-admissible JSON & PDF forensic audit trails with full frame-level telemetry.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-3 shrink-0">
+                    <div class="px-4 py-3 rounded-xl bg-obsidian border border-slateBorder text-center">
+                        <div class="text-lg font-bold font-mono text-white">99.4%</div>
+                        <div class="text-[11px] text-slate-400">DFDC Benchmark AUC</div>
+                    </div>
+                    <div class="px-4 py-3 rounded-xl bg-obsidian border border-slateBorder text-center">
+                        <div class="text-lg font-bold font-mono text-cyberCyan">&lt; 1.8s</div>
+                        <div class="text-[11px] text-slate-400">Inference Latency</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slateBorder py-8 bg-obsidian text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="scan-eye" class="w-4 h-4 text-cyberCyan"></i>
+                <span class="font-semibold text-slate-300">TRUTH LENS FORENSICS</span>
+                <span>— Multimodal Authenticity Intelligence</span>
+            </div>
+            <div class="font-mono">
+                SYSTEM STATUS: NOMINAL // ALL ENGINES READY
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Toast Notification (Replaces alert) -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slatePanel border border-cyberCyan/50 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs font-mono">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-cyberCyan shrink-0"></i>
+            <span id="toast-message">Forensic JSON report copied to clipboard.</span>
+        </div>
+    </div>
+
+    <!-- Application Logic & Interactive Forensic Canvas -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Forensic Case Datasets
+        const FORENSIC_CASES = {
+            deepfake_video: {
+                id: 'deepfake_video',
+                filename: 'exhibit_a_ceo_statement.mp4',
+                resolution: '1920x1080 (60fps)',
+                type: 'video',
+                score: '96.8%',
+                verdict: 'MANIPULATED',
+                status: 'danger',
+                c2pa: 'C2PA SIGNATURE MISSING',
+                summary: 'High-confidence facial reenactment detected. Diffusion blending artifacts identified along jawline boundaries alongside phoneme-to-viseme lip synchronization drift (+140ms).',
+                metadata: [
+                    { label: 'CODEC / CONTAINER', value: 'H.264 / MP4 (Lavf58)' },
+                    { label: 'PRNU SENSOR HASH', value: 'NONE (Synthetic)' },
+                    { label: 'COLOR SPACE', value: 'YUV420p (Rec.709)' },
+                    { label: 'DURATION', value: '00:15.00 (900 frames)' }
+                ],
+                modalities: [
+                    { name: 'Facial Pixel & Boundary GAN', score: 98, status: 'danger', detail: 'Blending seam & texture upsampling detected' },
+                    { name: 'Audio-Visual Lip Sync', score: 91, status: 'danger', detail: '140ms phoneme-viseme latency offset' },
+                    { name: 'rPPG Biological Pulse', score: 95, status: 'danger', detail: 'No subsurface hemoglobin rhythm detected' },
+                    { name: 'Acoustic Vocoder Trace', score: 64, status: 'warning', detail: 'Minor spectral smoothing above 11kHz' }
+                ],
+                findings: [
+                    'Periodic checkerboard artifacts in 8x8 DCT blocks around mandibular contour.',
+                    'Asymmetric corneal specular reflections between left and right ocular regions.',
+                    'FFmpeg re-encoding signature stripped original camera EXIF/XMP provenance.'
+                ],
+                timeline: [12, 18, 85, 92, 96, 98, 94, 89, 45, 78, 95, 99, 97, 91, 88, 60, 82, 94, 96, 90]
+            },
+            voice_clone: {
+                id: 'voice_clone',
+                filename: 'exhibit_b_urgent_wire_call.wav',
+                resolution: '48kHz / 24-bit PCM',
+                type: 'audio',
+                score: '92.4%',
+                verdict: 'SYNTHETIC VOICE',
+                status: 'danger',
+                c2pa: 'NO HARDWARE ATTESTATION',
+                summary: 'Zero-shot neural voice cloning detected. Mel-spectrogram reveals phase discontinuities at formant transitions and unnatural micro-prosody pitch flattening.',
+                metadata: [
+                    { label: 'SAMPLE RATE', value: '48,000 Hz Stereo' },
+                    { label: 'VOCODER SIGNATURE', value: 'HiFi-GAN / Diffusion' },
+                    { label: 'NOISE FLOOR', value: '-78.4 dB (Synthetic)' },
+                    { label: 'DURATION', value: '00:22.40' }
+                ],
+                modalities: [
+                    { name: 'Neural Vocoder Harmonics', score: 96, status: 'danger', detail: 'High-frequency phase collapse > 9.5kHz' },
+                    { name: 'Breath & Glottal Cadence', score: 89, status: 'danger', detail: 'Missing physiological inhalation pauses' },
+                    { name: 'Room Impulse Response', score: 84, status: 'warning', detail: 'Inconsistent reverberation tail decay' },
+                    { name: 'Container Metadata', score: 75, status: 'warning', detail: 'Exported via virtual audio driver' }
+                ],
+                findings: [
+                    'Harmonic-to-noise ratio exhibits metallic periodicity typical of neural vocoders.',
+                    'Identical pitch contour repetition across repeated proper nouns.',
+                    'Abrupt spectral cutoff at 16kHz despite 48kHz container sample rate.'
+                ],
+                timeline: [30, 88, 94, 91, 40, 25, 89, 96, 95, 92, 87, 35, 90, 94, 97, 93, 85, 79, 91, 88]
+            },
+            authentic_photo: {
+                id: 'authentic_photo',
+                filename: 'exhibit_c_press_conference_raw.jpg',
+                resolution: '4032x3024 (12.2 MP)',
+                type: 'image',
+                score: '1.4%',
+                verdict: 'AUTHENTIC',
+                status: 'safe',
+                c2pa: 'C2PA HARDWARE SIGNED',
+                summary: 'Media verified as authentic camera capture. Hardware cryptographic signature intact, PRNU sensor noise matches Sony IMX sensor profile, and ELA compression is uniform.',
+                metadata: [
+                    { label: 'CAPTURE DEVICE', value: 'Sony ILCE-1 (Verified)' },
+                    { label: 'C2PA SIGNER', value: 'Truepic / Leica C2PA' },
+                    { label: 'PRNU CORRELATION', value: '0.992 (Sensor Match)' },
+                    { label: 'EXPOSURE', value: '1/250s f/2.8 ISO 400' }
+                ],
+                modalities: [
+                    { name: 'Error Level Analysis (ELA)', score: 2, status: 'safe', detail: 'Uniform JPEG quantization grid' },
+                    { name: 'PRNU Sensor Fingerprint', score: 1, status: 'safe', detail: 'Valid silicon photo-response noise' },
+                    { name: 'Lighting & Shadow Physics', score: 3, status: 'safe', detail: 'Consistent multi-source illumination' },
+                    { name: 'C2PA Cryptographic Chain', score: 0, status: 'safe', detail: 'Valid X.509 hardware certificate' }
+                ],
+                findings: [
+                    'Cryptographic hash matches original capture manifest with zero post-capture edits.',
+                    'Natural chromatic aberration and lens vignetting consistent with 35mm optical profile.',
+                    'Subsurface skin texture and micro-pores show zero GAN smoothing.'
+                ],
+                timeline: [4, 2, 3, 1, 2, 4, 2, 1, 3, 2, 1, 2, 3, 1, 2, 2, 1, 3, 2, 1]
+            }
+        };
+
+        let currentCase = FORENSIC_CASES.deepfake_video;
+        let currentLens = 'heatmap';
+        let scrubberProgress = 0.28;
+        let animationFrameId = null;
+        let uploadedImageObj = null;
+
+        // Canvas setup & responsive resizing
+        const canvas = document.getElementById('forensic-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (!wrapper) return;
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Render interactive forensic visualization on canvas
+        function renderCanvas(timestamp) {
+            const wrapper = document.getElementById('canvas-wrapper');
+            const width = wrapper.clientWidth;
+            const height = wrapper.clientHeight;
+            const t = (timestamp || 0) * 0.002;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Background dark forensic grid
+            ctx.fillStyle = '#070B12';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
+            ctx.lineWidth = 1;
+            const gridSize = 28;
+            for (let x = 0; x < width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            if (currentCase.type === 'audio' || currentLens === 'spectral') {
+                drawSpectrogramView(width, height, t);
+            } else {
+                drawVisualForensicView(width, height, t);
+            }
+
+            animationFrameId = requestAnimationFrame(renderCanvas);
+        }
+
+        // Draw Face / Visual Forensic Overlay
+        function drawVisualForensicView(width, height, t) {
+            const cx = width / 2;
+            const cy = height / 2;
+            const radius = Math.min(width, height) * 0.28;
+
+            // If user uploaded an image, draw it fitted inside viewport
+            if (uploadedImageObj) {
+                const imgRatio = uploadedImageObj.width / uploadedImageObj.height;
+                const canvasRatio = width / height;
+                let drawW, drawH, drawX, drawY;
+                if (imgRatio > canvasRatio) {
+                    drawW = width * 0.85;
+                    drawH = drawW / imgRatio;
+                } else {
+                    drawH = height * 0.85;
+                    drawW = drawH * imgRatio;
+                }
+                drawX = (width - drawW) / 2;
+                drawY = (height - drawH) / 2;
+                ctx.drawImage(uploadedImageObj, drawX, drawY, drawW, drawH);
+            } else {
+                // Stylized biometric wireframe subject silhouette
+                ctx.save();
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+                ctx.lineWidth = 1.5;
+
+                // Head oval
+                ctx.beginPath();
+                ctx.ellipse(cx, cy - radius * 0.05, radius * 0.72, radius * 0.95, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Shoulders
+                ctx.beginPath();
+                ctx.arc(cx, cy + radius * 1.55, radius * 1.25, Math.PI * 1.15, Math.PI * 1.85);
+                ctx.stroke();
+
+                // Facial Mesh Grid Lines
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.22)';
+                ctx.lineWidth = 1;
+                // Eye axis
+                ctx.beginPath();
+                ctx.moveTo(cx - radius * 0.65, cy - radius * 0.22);
+                ctx.lineTo(cx + radius * 0.65, cy - radius * 0.22);
+                ctx.stroke();
+                // Nose vertical axis
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - radius * 0.95);
+                ctx.lineTo(cx, cy + radius * 0.85);
+                ctx.stroke();
+                // Mouth axis
+                ctx.beginPath();
+                ctx.moveTo(cx - radius * 0.45, cy + radius * 0.38);
+                ctx.lineTo(cx + radius * 0.45, cy + radius * 0.38);
+                ctx.stroke();
+
+                // Biometric Landmark Nodes
+                const landmarks = [
+                    [-0.32, -0.22], [0.32, -0.22], // Eyes
+                    [0, 0.08], [-0.12, 0.12], [0.12, 0.12], // Nose
+                    [-0.25, 0.38], [0, 0.35], [0.25, 0.38], [0, 0.44], // Mouth
+                    [-0.58, 0.25], [0.58, 0.25], [-0.42, 0.68], [0.42, 0.68], [0, 0.88] // Jawline
+                ];
+
+                landmarks.forEach(([lx, ly], idx) => {
+                    const px = cx + lx * radius;
+                    const py = cy + ly * radius;
+                    ctx.fillStyle = currentCase.status === 'danger' && idx >= 5 ? '#EF4444' : '#06B6D4';
+                    ctx.beginPath();
+                    ctx.arc(px, py, 2.8, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.restore();
+            }
+
+            // Apply Lens Overlay Effects
+            if (currentLens === 'heatmap') {
+                if (currentCase.status === 'danger') {
+                    // Simulated GAN blending artifact heatmap around mouth & jawline
+                    const grad1 = ctx.createRadialGradient(cx, cy + radius * 0.42, 5, cx, cy + radius * 0.42, radius * 0.75);
+                    grad1.addColorStop(0, 'rgba(239, 68, 68, 0.55)');
+                    grad1.addColorStop(0.5, 'rgba(245, 158, 11, 0.28)');
+                    grad1.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                    ctx.fillStyle = grad1;
+                    ctx.fillRect(0, 0, width, height);
+
+                    // Pulsing anomaly target box around lip/jaw region
+                    const pulse = Math.sin(t * 2.5) * 3;
+                    ctx.strokeStyle = '#EF4444';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([5, 3]);
+                    ctx.strokeRect(
+                        cx - radius * 0.55 - pulse,
+                        cy + radius * 0.15 - pulse,
+                        radius * 1.1 + pulse * 2,
+                        radius * 0.68 + pulse * 2
+                    );
+                    ctx.setLineDash([]);
+
+                    // Callout Tag
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+                    ctx.fillRect(cx + radius * 0.6, cy + radius * 0.15, 138, 20);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = '600 10px "JetBrains Mono", monospace';
+                    ctx.fillText('GAN SEAM: 98.2% CONF', cx + radius * 0.6 + 6, cy + radius * 0.15 + 13);
+                } else {
+                    // Authentic subtle green verification overlay
+                    const gradSafe = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius * 1.1);
+                    gradSafe.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
+                    gradSafe.addColorStop(1, 'rgba(16, 185, 129, 0)');
+                    ctx.fillStyle = gradSafe;
+                    ctx.fillRect(0, 0, width, height);
+                }
+            } else if (currentLens === 'ela') {
+                // Error Level Analysis (ELA) high-frequency noise grain simulation
+                ctx.save();
+                for (let i = 0; i < 420; i++) {
+                    const rx = ((Math.sin(i * 12.9898 + t * 0.2) * 43758.5453) % 1 + 1) % 1 * width;
+                    const ry = ((Math.sin(i * 78.233 + t * 0.2) * 43758.5453) % 1 + 1) % 1 * height;
+                    const isAnomalyZone = Math.hypot(rx - cx, ry - (cy + radius * 0.35)) < radius * 0.65;
+                    
+                    if (currentCase.status === 'danger' && isAnomalyZone) {
+                        ctx.fillStyle = 'rgba(239, 68, 68, 0.75)';
+                        ctx.fillRect(rx, ry, 3, 3);
+                    } else {
+                        ctx.fillStyle = 'rgba(6, 182, 212, 0.28)';
+                        ctx.fillRect(rx, ry, 2, 2);
+                    }
+                }
+                ctx.restore();
+            }
+
+            // Corner Reticle Brackets
+            drawReticleBrackets(width, height);
+        }
+
+        // Draw Acoustic Mel-Spectrogram View
+        function drawSpectrogramView(width, height, t) {
+            const bars = 64;
+            const barWidth = (width - 80) / bars;
+            const startX = 40;
+            const baseY = height - 45;
+            const maxH = height - 95;
+
+            for (let i = 0; i < bars; i++) {
+                const freqRatio = i / bars;
+                const wave = Math.sin(i * 0.35 + t * 3) * 0.5 + 0.5;
+                const harmonic = Math.cos(i * 0.15 - t * 2) * 0.5 + 0.5;
+                let amplitude = (wave * 0.6 + harmonic * 0.4) * (1 - freqRatio * 0.55);
+
+                // Synthetic vocoder cutoff anomaly above 65% frequency band
+                const isSyntheticCutoff = currentCase.status === 'danger' && freqRatio > 0.65;
+                if (isSyntheticCutoff) {
+                    amplitude *= 0.22;
+                }
+
+                const h = Math.max(8, amplitude * maxH);
+                const x = startX + i * barWidth;
+                const y = baseY - h;
+
+                if (isSyntheticCutoff) {
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
+                } else if (currentCase.status === 'safe') {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.75)';
+                } else {
+                    ctx.fillStyle = 'rgba(6, 182, 212, 0.8)';
+                }
+
+                ctx.fillRect(x, y, Math.max(2, barWidth - 2), h);
+            }
+
+            // Draw Vocoder Cutoff Annotation if manipulated
+            if (currentCase.status === 'danger') {
+                const cutoffX = startX + bars * 0.65 * barWidth;
+                ctx.strokeStyle = '#EF4444';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(cutoffX, 30);
+                ctx.lineTo(cutoffX, baseY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+                ctx.fillRect(cutoffX + 8, 36, 165, 22);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '600 10px "JetBrains Mono", monospace';
+                ctx.fillText('VOCODER PHASE COLLAPSE', cutoffX + 14, 50);
+            }
+
+            drawReticleBrackets(width, height);
+        }
+
+        function drawReticleBrackets(width, height) {
+            const pad = 16;
+            const len = 18;
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+            ctx.lineWidth = 2;
+
+            // Top-left
+            ctx.beginPath();
+            ctx.moveTo(pad, pad + len);
+            ctx.lineTo(pad, pad);
+            ctx.lineTo(pad + len, pad);
+            ctx.stroke();
+
+            // Top-right
+            ctx.beginPath();
+            ctx.moveTo(width - pad - len, pad);
+            ctx.lineTo(width - pad, pad);
+            ctx.lineTo(width - pad, pad + len);
+            ctx.stroke();
+
+            // Bottom-left
+            ctx.beginPath();
+            ctx.moveTo(pad, height - pad - len);
+            ctx.lineTo(pad, height - pad);
+            ctx.lineTo(pad + len, height - pad);
+            ctx.stroke();
+
+            // Bottom-right
+            ctx.beginPath();
+            ctx.moveTo(width - pad - len, height - pad);
+            ctx.lineTo(width - pad, height - pad);
+            ctx.lineTo(width - pad, height - pad - len);
+            ctx.stroke();
+        }
+
+        // Update UI with active case telemetry
+        function updateForensicUI(data) {
+            document.getElementById('viewport-filename').textContent = data.filename;
+            document.getElementById('hud-resolution').textContent = `SPEC: ${data.resolution}`;
+
+            // Update C2PA Badge
+            const c2paBadge = document.getElementById('c2pa-badge');
+            c2paBadge.textContent = data.c2pa;
+            if (data.status === 'safe') {
+                c2paBadge.className = 'text-[11px] font-mono px-2.5 py-0.5 rounded bg-authenticGreen/15 text-authenticGreen border border-authenticGreen/30';
+            } else {
+                c2paBadge.className = 'text-[11px] font-mono px-2.5 py-0.5 rounded bg-anomalyRed/15 text-anomalyRed border border-anomalyRed/30';
+            }
+
+            // Populate Metadata Cards
+            const metaGrid = document.getElementById('metadata-grid');
+            metaGrid.innerHTML = data.metadata.map(m => `
+                <div class="bg-obsidian/90 border border-slateBorder rounded-xl p-2.5">
+                    <div class="text-[10px] font-mono text-slate-500 uppercase">${m.label}</div>
+                    <div class="text-xs font-mono text-slate-200 mt-1 truncate" title="${m.value}">${m.value}</div>
+                </div>
+            `).join('');
+
+            // Update Verdict Card styling
+            const verdictCard = document.getElementById('verdict-card');
+            const verdictGlow = document.getElementById('verdict-glow');
+            const verdictScore = document.getElementById('verdict-score');
+            const verdictLabel = document.getElementById('verdict-label');
+            const verdictIconBox = document.getElementById('verdict-icon-box');
+
+            verdictScore.textContent = data.score;
+            verdictLabel.textContent = data.verdict;
+            document.getElementById('verdict-summary').textContent = data.summary;
+
+            if (data.status === 'safe') {
+                verdictCard.className = 'glass-panel rounded-2xl p-5 sm:p-6 border border-authenticGreen/40 relative overflow-hidden';
+                verdictGlow.className = 'absolute -top-24 -right-24 w-48 h-48 bg-authenticGreen/15 rounded-full blur-3xl pointer-events-none';
+                verdictScore.className = 'text-4xl sm:text-5xl font-bold font-mono text-authenticGreen';
+                verdictLabel.className = 'text-xs font-mono font-semibold uppercase px-2.5 py-1 rounded bg-authenticGreen/20 text-authenticGreen border border-authenticGreen/30';
+                verdictIconBox.className = 'w-12 h-12 rounded-xl bg-authenticGreen/15 border border-authenticGreen/30 flex items-center justify-center text-authenticGreen shrink-0';
+                verdictIconBox.innerHTML = '<i data-lucide="shield-check" class="w-6 h-6"></i>';
+            } else {
+                verdictCard.className = 'glass-panel rounded-2xl p-5 sm:p-6 border border-anomalyRed/40 relative overflow-hidden';
+                verdictGlow.className = 'absolute -top-24 -right-24 w-48 h-48 bg-anomalyRed/15 rounded-full blur-3xl pointer-events-none';
+                verdictScore.className = 'text-4xl sm:text-5xl font-bold font-mono text-anomalyRed';
+                verdictLabel.className = 'text-xs font-mono font-semibold uppercase px-2.5 py-1 rounded bg-anomalyRed/20 text-anomalyRed border border-anomalyRed/30';
+                verdictIconBox.className = 'w-12 h-12 rounded-xl bg-anomalyRed/15 border border-anomalyRed/30 flex items-center justify-center text-anomalyRed shrink-0';
+                verdictIconBox.innerHTML = '<i data-lucide="alert-triangle" class="w-6 h-6"></i>';
+            }
+
+            // Populate Modality Bars
+            const modalityList = document.getElementById('modality-list');
+            modalityList.innerHTML = data.modalities.map(mod => {
+                let barColor = 'bg-anomalyRed';
+                let textColor = 'text-anomalyRed';
+                if (mod.status === 'warning') {
+                    barColor = 'bg-warningAmber';
+                    textColor = 'text-warningAmber';
+                } else if (mod.status === 'safe') {
+                    barColor = 'bg-authenticGreen';
+                    textColor = 'text-authenticGreen';
+                }
+
+                return `
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-medium text-slate-200">${mod.name}</span>
+                            <span class="font-mono font-semibold ${textColor}">${mod.score}% Anomaly</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-obsidian rounded-full overflow-hidden border border-slateBorder">
+                            <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width: ${Math.max(4, mod.score)}%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">${mod.detail}</p>
+                    </div>
+                `;
+            }).join('');
+
+            // Populate Findings List
+            const findingsList = document.getElementById('findings-list');
+            findingsList.innerHTML = data.findings.map(item => `
+                <li class="flex items-start gap-2">
+                    <span class="mt-1 w-1.5 h-1.5 rounded-full ${data.status === 'safe' ? 'bg-authenticGreen' : 'bg-cyberCyan'} shrink-0"></span>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+
+            // Populate Timeline Scrubber Bars
+            renderTimelineBars(data.timeline, data.status);
+
+            // Re-initialize newly added Lucide icons
+            lucide.createIcons();
+        }
+
+        function renderTimelineBars(points, status) {
+            const barContainer = document.getElementById('timeline-bar');
+            barContainer.innerHTML = points.map((val, idx) => {
+                const isSelected = Math.abs((idx / points.length) - scrubberProgress) < 0.05;
+                let colorClass = 'bg-cyberCyan/40';
+                if (status === 'danger' && val > 75) {
+                    colorClass = 'bg-anomalyRed/80';
+                } else if (status === 'safe') {
+                    colorClass = 'bg-authenticGreen/60';
+                }
+                if (isSelected) {
+                    colorClass = 'bg-white shadow-[0_0_8px_#fff]';
+                }
+
+                return `<div class="flex-1 rounded-sm transition-all ${colorClass}" style="height: ${Math.max(18, val)}%"></div>`;
+            }).join('');
+        }
+
+        // Switch sample exhibit with simulated scan animation
+        function loadSample(sampleKey) {
+            uploadedImageObj = null;
+            currentCase = FORENSIC_CASES[sampleKey];
+
+            // Update active button state
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.className = 'sample-btn px-3.5 py-2 rounded-lg text-xs font-medium border border-slateBorder bg-slatePanel hover:border-slate-600 text-slate-300 transition-all flex items-center gap-2';
+            });
+            const activeMap = {
+                deepfake_video: 'btn-sample-1',
+                voice_clone: 'btn-sample-2',
+                authentic_photo: 'btn-sample-3'
+            };
+            const activeBtn = document.getElementById(activeMap[sampleKey]);
+            if (activeBtn) {
+                activeBtn.className = 'sample-btn active px-3.5 py-2 rounded-lg text-xs font-medium border transition-all flex items-center gap-2 bg-cyberCyan/15 border-cyberCyan text-white';
+            }
+
+            // Switch lens automatically for audio exhibit
+            if (currentCase.type === 'audio') {
+                setLensMode('spectral');
+            } else {
+                setLensMode('heatmap');
+            }
+
+            triggerScanEffect(() => {
+                updateForensicUI(currentCase);
+            });
+        }
+
+        // Handle user custom file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const isAudio = file.type.startsWith('audio/');
+            const isImage = file.type.startsWith('image/');
+
+            // Clear active sample highlights
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.className = 'sample-btn px-3.5 py-2 rounded-lg text-xs font-medium border border-slateBorder bg-slatePanel hover:border-slate-600 text-slate-300 transition-all flex items-center gap-2';
+            });
+
+            if (isImage) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        uploadedImageObj = img;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                uploadedImageObj = null;
+            }
+
+            // Construct dynamic forensic telemetry for uploaded file
+            const fileSizeKB = (file.size / 1024).toFixed(1);
+            currentCase = {
+                id: 'custom_upload',
+                filename: file.name,
+                resolution: `${fileSizeKB} KB // ${file.type || 'BINARY'}`,
+                type: isAudio ? 'audio' : 'image',
+                score: '84.2%',
+                verdict: 'SUSPICIOUS ARTIFACTS',
+                status: 'danger',
+                c2pa: 'NO C2PA MANIFEST FOUND',
+                summary: `Automated multimodal scan completed for "${file.name}". Detected non-standard quantization noise patterns and missing cryptographic capture provenance.`,
+                metadata: [
+                    { label: 'MIME TYPE', value: file.type || 'application/octet-stream' },
+                    { label: 'PAYLOAD SIZE', value: `${fileSizeKB} KB` },
+                    { label: 'C2PA PROVENANCE', value: 'Unverified / Stripped' },
+                    { label: 'ENTROPY SCORE', value: '7.94 bits/byte' }
+                ],
+                modalities: [
+                    { name: 'Frequency Domain Residuals', score: 87, status: 'danger', detail: 'Anomalous high-frequency spectral distribution' },
+                    { name: 'Compression & ELA Grid', score: 81, status: 'danger', detail: 'Double-quantization variance detected' },
+                    { name: 'Metadata & EXIF Integrity', score: 90, status: 'danger', detail: 'Camera hardware signature absent' },
+                    { name: 'Cross-Modal Coherence', score: 72, status: 'warning', detail: 'Secondary heuristic flags triggered' }
+                ],
+                findings: [
+                    `File "${file.name}" lacks signed C2PA Content Credentials.`,
+                    'Discrete Cosine Transform (DCT) coefficient distribution deviates from natural sensor baseline.',
+                    'Recommend secondary manual verification of original source chain.'
+                ],
+                timeline: [45, 62, 84, 88, 79, 85, 91, 86, 74, 80, 89, 83, 77, 85, 90, 82, 78, 84, 86, 81]
+            };
+
+            setLensMode(isAudio ? 'spectral' : 'heatmap');
+
+            triggerScanEffect(() => {
+                updateForensicUI(currentCase);
+                showToast(`Forensic scan complete for ${file.name}`);
+            });
+        }
+
+        // Switch forensic lens mode
+        function setLensMode(mode) {
+            currentLens = mode;
+            document.querySelectorAll('.lens-tab').forEach(tab => {
+                tab.className = 'lens-tab px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all';
+            });
+            const activeTab = document.getElementById(`lens-${mode}`);
+            if (activeTab) {
+                activeTab.className = 'lens-tab px-2.5 py-1 rounded bg-slate-800 text-cyberCyan font-semibold transition-all';
+            }
+
+            const labels = {
+                standard: 'LENS: RAW UNFILTERED STREAM',
+                heatmap: 'LENS: GAN PROBABILITY HEATMAP',
+                ela: 'LENS: ERROR LEVEL ANALYSIS (ELA)',
+                spectral: 'LENS: MEL-SPECTROGRAM PHASE'
+            };
+            document.getElementById('hud-lens-label').textContent = labels[mode] || 'LENS: ACTIVE';
+        }
+
+        // Simulated neural processing animation
+        function triggerScanEffect(callback) {
+            const hud = document.getElementById('processing-hud');
+            const scanLine = document.getElementById('scan-overlay');
+            const stepText = document.getElementById('processing-step');
+
+            hud.classList.remove('hidden');
+            scanLine.classList.remove('hidden');
+
+            const steps = [
+                'EXTRACTING BIOMETRIC LANDMARKS...',
+                'ANALYZING MEL-SPECTROGRAM PHASE...',
+                'VERIFYING C2PA CRYPTOGRAPHIC CHAIN...'
+            ];
+            let stepIdx = 0;
+            stepText.textContent = steps[0];
+
+            const interval = setInterval(() => {
+                stepIdx++;
+                if (stepIdx < steps.length) {
+                    stepText.textContent = steps[stepIdx];
+                }
+            }, 280);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                hud.classList.add('hidden');
+                if (callback) callback();
+            }, 900);
+        }
+
+        function reRunScan() {
+            triggerScanEffect(() => {
+                showToast('Multimodal neural verification refreshed.');
+            });
+        }
+
+        // Scrub interactive timeline
+        function scrubTimeline(event) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            scrubberProgress = Math.max(0, Math.min(1, clickX / rect.width));
+            
+            const totalSeconds = 15;
+            const currentSec = (scrubberProgress * totalSeconds).toFixed(2).padStart(5, '0');
+            document.getElementById('timeline-timestamp').textContent = `00:${currentSec} / 00:15.00`;
+            renderTimelineBars(currentCase.timeline, currentCase.status);
+        }
+
+        // Export JSON forensic report using safe clipboard fallback
+        function exportReport() {
+            const reportPayload = {
+                system: 'Truth Lens Multimodal Forensics v4.2',
+                timestamp: new Date().toISOString(),
+                exhibit: currentCase.filename,
+                verdict: currentCase.verdict,
+                synthetic_probability: currentCase.score,
+                c2pa_status: currentCase.c2pa,
+                modalities: currentCase.modalities,
+                findings: currentCase.findings
+            };
+
+            const jsonStr = JSON.stringify(reportPayload, null, 2);
+            const tempInput = document.createElement('textarea');
+            tempInput.value = jsonStr;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast('Forensic JSON audit report copied to clipboard.');
+            } catch (err) {
+                showToast('Unable to access clipboard in this environment.');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3200);
+        }
+
+        function scrollToWorkbench() {
+            document.getElementById('workbench').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Boot sequence
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            updateForensicUI(currentCase);
+            setLensMode('heatmap');
+            document.getElementById('scan-overlay').classList.remove('hidden');
+            requestAnimationFrame(renderCanvas);
+        });
+    </script>
+</body>
+</html>
